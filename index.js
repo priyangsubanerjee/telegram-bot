@@ -1,29 +1,60 @@
-const TelegramBot = require("node-telegram-bot-api");
+const { Telegraf } = require("telegraf");
+const bot = new Telegraf("6005874620:AAE2ilM3xpnglJg70OmhG6JFsB9yvxx214Y");
 
-// replace the value below with the Telegram token you receive from @BotFather
-const token = "6005874620:AAE2ilM3xpnglJg70OmhG6JFsB9yvxx214Y";
-
-// Create a bot that uses 'polling' to fetch new updates
-const bot = new TelegramBot(token, { polling: true });
-
-// Matches "/echo [whatever]"
-bot.onText(/\/echo (.+)/, (msg, match) => {
-  // 'msg' is the received Message from Telegram
-  // 'match' is the result of executing the regexp above on the text content
-  // of the message
-
-  const chatId = msg.chat.id;
-  const resp = match[1]; // the captured "whatever"
-
-  // send back the matched "whatever" to the chat
-  bot.sendMessage(chatId, resp);
+bot.command("start", (ctx) => {
+  console.log(ctx.from);
+  bot.telegram.sendMessage(
+    ctx.chat.id,
+    "hello there! Welcome to my new telegram bot.",
+    {}
+  );
 });
 
-// Listen for any kind of message. There are different kinds of
-// messages.
-bot.on("message", (msg) => {
-  const chatId = msg.chat.id;
-
-  // send a message to the chat acknowledging receipt of their message
-  bot.sendMessage(chatId, "Received your message");
+bot.hears("animals", (ctx) => {
+  console.log(ctx.from);
+  let animalMessage = `great, here are pictures of animals you would love`;
+  ctx.deleteMessage();
+  bot.telegram.sendMessage(ctx.chat.id, animalMessage, {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "dog",
+            callback_data: "dog",
+          },
+          {
+            text: "cat",
+            callback_data: "cat",
+          },
+        ],
+      ],
+    },
+  });
 });
+
+bot.hears("phone", (ctx, next) => {
+  console.log(ctx.from);
+  bot.telegram.sendMessage(
+    ctx.chat.id,
+    "Can we get access to your phone number?",
+    requestPhoneKeyboard
+  );
+});
+
+const requestPhoneKeyboard = {
+  reply_markup: {
+    one_time_keyboard: true,
+    keyboard: [
+      [
+        {
+          text: "My phone number",
+          request_contact: true,
+          one_time_keyboard: true,
+        },
+      ],
+      ["Cancel"],
+    ],
+  },
+};
+
+bot.launch();
