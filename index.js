@@ -12,13 +12,8 @@ bot.command("start", (ctx) => {
 
 // listen for text messages
 
-bot.on("text", (ctx) => {
-  console.log(ctx.message.text);
-  bot.telegram.sendMessage(
-    ctx.chat.id,
-    "hello there! Welcome to my new telegram bot.",
-    {}
-  );
+bot.command("hi", (ctx) => {
+  ctx.reply("Hello there!");
 });
 
 const requestPhoneKeyboard = {
