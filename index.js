@@ -10,10 +10,35 @@ bot.command("start", (ctx) => {
   );
 });
 
-// listen for text messages
+bot.hears("animals", (ctx) => {
+  console.log(ctx.from);
+  let animalMessage = `great, here are pictures of animals you would love`;
+  ctx.deleteMessage();
+  bot.telegram.sendMessage(ctx.chat.id, animalMessage, {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "dog",
+            callback_data: "dog",
+          },
+          {
+            text: "cat",
+            callback_data: "cat",
+          },
+        ],
+      ],
+    },
+  });
+});
 
-bot.command("hi", (ctx) => {
-  ctx.reply("Hello there!");
+bot.hears("phone", (ctx, next) => {
+  console.log(ctx.from);
+  bot.telegram.sendMessage(
+    ctx.chat.id,
+    "Can we get access to your phone number?",
+    requestPhoneKeyboard
+  );
 });
 
 const requestPhoneKeyboard = {
